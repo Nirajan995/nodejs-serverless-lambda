@@ -1,0 +1,39 @@
+# serverless.yml
+# component: aws-iam-role             # (required) name of the component. In that case, it's aws-iam-role.
+# name: testfpl                       # (required) name of your component instance.
+
+# inputs:
+#   name: testfpl                     # (optional) role name. default is the component instance name above.
+#   service: lambda.amazonaws.com     # (optional) service that assumes this role. default is lambda.amazonaws.com.
+#   policy:                           # (optional) inline policy statement, or managed policy arn. default is the admin arn.
+#     - Effect: Allow
+#       Action:
+#         - sts:AssumeRole
+#       Resource: '*'
+#     - Effect: Allow
+#       Action:
+#         - logs:CreateLogGroup
+#         - logs:CreateLogStream
+#         - logs:PutLogEvents
+#       Resource: '*'
+service: sls-express-mongodb
+custom:
+  secrets: /{secrets}
+provider:
+  name: aws
+  runtime: nodejs16.14.2
+  region: us-east-1
+functions:
+  app:
+    handler: server.run
+    events:
+      - http:
+          path: /
+          method: ANY
+          cors: true
+      - http:
+          path: /{proxy+}
+          method: ANY
+          cors: true
+plugins:
+  - serverless-offline
